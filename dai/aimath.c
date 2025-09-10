@@ -2,7 +2,7 @@
 
 extern float init_weight()
 {
-return ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+    return ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
 }
 
 extern float mse(float predicted, float correct)

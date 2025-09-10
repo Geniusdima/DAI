@@ -101,15 +101,16 @@ extern void backprop_perceptron(network * net, float step, float * correct, int 
         {
             if(i == net->count - 1)
             {
-                net->layers[i].neurons[j].gradient = net->layers[i].neurons[j].value * (1.0f - net->layers[i].neurons[j].value) * mse(net->layers[i].neurons[j].value, correct[j]);
+                net->layers[i].neurons[j].gradient = (net->layers[i].neurons[j].value * (1.0f - net->layers[i].neurons[j].value)) * mse(net->layers[i].neurons[j].value, correct[j]);
             }
             else
             {
                 net->layers[i].neurons[j].gradient = 0;
                 for(int k = 0; k < net->layers[i+1].count; k++)
                 {
-                    net->layers[i].neurons[j].gradient += net->layers[i].neurons[j].weight[k] *  net->layers[i+1].neurons[j].gradient;
+                    net->layers[i].neurons[j].gradient += net->layers[i].neurons[j].weight[k] *  net->layers[i+1].neurons[k].gradient;
                 }
+                net->layers[i].neurons[j].gradient *=    (net->layers[i].neurons[j].value * (1.0f - net->layers[i].neurons[j].value));
             }
         }
     }
