@@ -1,6 +1,6 @@
 #include "dai/aiheaders.h"
 
-#define STEP 0.1
+#define STEP 0.5
 
 int main()
 {
@@ -22,10 +22,10 @@ int main()
     srand(time(NULL));
     network net;
     net = init_perceptron(schm, 3);
-    
+
     int r = 0;
     
-    for(int i = 0; i < 100000; i++)
+    for(int i = 0; i < 1000000; i++)
     {
         r = rand() % 4;
         switch (r)
@@ -66,7 +66,7 @@ int main()
     int v1, v2;
     printf("ok\n");
     
-    while (1)
+    for(int i = 0; i < 4; i++)
     {
         scanf("%d %d",&v1,&v2);
 
@@ -77,8 +77,8 @@ int main()
         forwardprop_perceptron(&net);
         printf("val1: %f\nval2: %f\n",net.layers[net.count-1].neurons[0].value, net.layers[net.count-1].neurons[1].value);        
     }
-    
-        cleanup_network(&net);
+    save_network(&net,"save.bin");
+    cleanup_network(&net);
 
     return 0;    
 }

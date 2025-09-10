@@ -4,10 +4,14 @@ extern network init_perceptron(schematic schm[], int schematic_count)
 {
     network net;
     int layers_count_max = 0;
+    net.count_schms = schematic_count;
+    net.schms = (schematic*)malloc(sizeof(schematic)*schematic_count);
 
+    
     for (int i = 0; i < schematic_count; i++)
     {
         layers_count_max += schm[i].layer_count;
+        net.schms[i] = schm[i];
     }
 
     net.count = layers_count_max;

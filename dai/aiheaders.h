@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <fcntl.h>
 
 typedef struct neuron neuron;
 typedef struct layer layer;
@@ -28,6 +29,8 @@ struct network
 {
     int count;
     layer * layers;
+    schematic * schms;
+    int count_schms;
 };
 
 struct schematic
@@ -36,6 +39,8 @@ struct schematic
     int neuron_count; //count neurons in layer 
 };
 
+extern network load_network(char * file_name);
+extern void save_network(network * net, char * save_name);
 extern network init_perceptron(schematic schm[], int schematic_count);
 extern void cleanup_network(network*net);
 extern float init_weight();
