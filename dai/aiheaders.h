@@ -51,5 +51,7 @@ extern void print_values_perceptron(network * net);
 extern void forwardprop_perceptron(network * net);
 extern float mse(float predicted, float correct);
 extern void backprop_perceptron(network * net, float step, float * correct, int correct_count);
+extern void backprop(network * net, float step, float * correct);
+extern void forwardprop(network * net);
 
 #endif

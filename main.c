@@ -1,86 +1,96 @@
 #include "dai/aiheaders.h"
 
-#define STEP 0.01
+#define COUNT 1000000
+#define STEP 0.08
+#define TRAINING
 
 int main()
 {
-    schematic schm[] =
+    srand(time(NULL));
+    #ifdef TRAINING
+    schematic schm[] = 
     {
-        //input layer
-        {.layer_count = 1, .neuron_count = 2},
-        //hiden layers
-        {.layer_count = 2, .neuron_count = 5},
-        //output layer
-        {.layer_count = 1, .neuron_count = 1},        
+        {.layer_count=1, .neuron_count=2},        
+        {.layer_count=2, .neuron_count=8},
+        {.layer_count=1, .neuron_count=3},
+        {.layer_count=1, .neuron_count=1},
     };
 
-    float arr1[] = {0};
-    float arr2[] = {1};
+    float corr[4][2] =
+    {
+        {0, 0},
+        {0, 1},
+        {1, 0},
+        {1, 1}
+    };
+
+    float corr1[1] = {0};
+
+    float corr2[1] = {1};
+    
+    network net = init_perceptron(schm,4);
 
     srand(time(NULL));
-    network net;
-    net = init_perceptron(schm, 3);
 
-    int r = 0;
+    int r;
+    clock_t start, end;
+    double cpu_time_used;
     
-    for(int i = 0; i < 500000; i++)
+    start = clock();
+    for (int i = 0; i < COUNT; i++)
     {
+        r = rand()%4;
 
-        r = rand() % 4;
-        switch (r)
-        {
-        case  0:
-        {
-            net.layers[0].neurons[0].value = 1;
-            net.layers[0].neurons[1].value = 1;
-            backprop_perceptron(&net, STEP, arr1, 1);
-            
-            break;
-        }        
-        case  1:
-        {
-            net.layers[0].neurons[0].value = 1;
-            net.layers[0].neurons[1].value = 0;
-            backprop_perceptron(&net, STEP, arr2, 1);
+        net.layers[0].neurons[0].value=corr[r][0];
+        net.layers[0].neurons[1].value=corr[r][1];
 
-            break;
-        }
-        case  2:
+        if(r == 3)
         {
-            net.layers[0].neurons[0].value = 0;
-            net.layers[0].neurons[1].value = 0;
-            backprop_perceptron(&net, STEP, arr1, 1);
-
-            break;
+            backprop_perceptron(&net, STEP, corr2, 1);
         }
-        case  3:
+        else
         {
-            net.layers[0].neurons[0].value = 0;
-            net.layers[0].neurons[1].value = 1;
-            backprop_perceptron(&net, STEP, arr2, 1);
-            break;
-        }
-        default:
-            break;
+            backprop_perceptron(&net, STEP, corr1, 1);
         }
     }
+
+    end = clock();
+    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
     
-    int v1, v2;
-    printf("ok\n");
-    
+    printf("Time taken: %.6f seconds\n", cpu_time_used);
+
+
+    int d1,d2;
+
     for(int i = 0; i < 5; i++)
     {
-        scanf("%d %d",&v1,&v2);
-
-        net.layers[0].neurons[0].value = (float)v1;
-        net.layers[0].neurons[1].value = (float)v2;
-
-
+        scanf("%d %d",&d1,&d2);
+        net.layers[0].neurons[0].value = d1;
+        net.layers[0].neurons[1].value = d2;
         forwardprop_perceptron(&net);
-        printf("val1: %f\n",net.layers[net.count-1].neurons[0].value);        
+        printf("%f\n",net.layers[net.count-1].neurons[0].value);
     }
-    save_network(&net,"save.bin");
+    
+    save_network(&net,"AND.bin");
     cleanup_network(&net);
+    #endif
+    
+    #ifndef TRAINING
+
+    network net = load_network("./bestNetworks/XOR.bin");
+    int d1,d2;
+    while(1)
+    {
+        scanf("%d %d",&d1,&d2);
+        net.layers[0].neurons[0].value = d1;
+        net.layers[0].neurons[1].value = d2;
+        forwardprop_perceptron(&net);
+        printf("%f\n",net.layers[net.count-1].neurons[0].value);
+    }
+
+    cleanup_network(&net);
+
+    #endif
 
     return 0;    
 }
